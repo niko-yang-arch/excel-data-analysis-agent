@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="上传Excel / CSV 表格，观察智能体选择指标、执行工具并积累经验。">
+  <title>表格分析 · Agent Loop</title><link rel="stylesheet" href="/style.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%232b57db'/%3E%3Cpath d='M9 22V16M16 22V9M23 22V13' stroke='white' stroke-width='3'/%3E%3C/svg%3E">
+</head>
+<body>
+  <header><a class="brand" href="/"><span class="mark">▥</span> 表格分析 <span class="brand-note">/ Agent Loop</span></a><button id="memory-button" class="quiet">查看记忆 <span>↗</span></button></header>
+  <main>
+    <div class="heading"><div><div class="eyebrow">TABLE INTELLIGENCE</div><h1>让数据决定，分析什么。</h1><p>上传一份Excel / CSV 表格，观察智能体从数据中选择指标、调用工具、积累经验。</p></div><span id="model-status" class="status">检查模型配置…</span></div>
+    <div class="workspace">
+      <aside class="panel setup">
+        <div class="section-label"><span>01</span><h2>本次数据</h2></div>
+        <label class="dropzone" id="dropzone" for="file"><span class="upload-icon">↑</span><strong id="file-name">选择或拖入Excel / CSV 表格</strong><span id="file-hint">CSV / XLSX · 最大 5 MB</span><input id="file" type="file" accept=".csv,.xlsx"></label>
+        <p class="hint">首行为列名，CSV 使用 UTF-8；Excel 读取第一张非空工作表。数据以本次上传为准。</p>
+        <label class="field-label" for="query">想重点了解什么？<span>可选</span></label>
+        <textarea id="query" rows="4" maxlength="2000" placeholder="例如：哪些指标值得关注？各类别有什么差异？&#10;留空，让智能体自主选择。"></textarea>
+        <button id="run" class="primary" disabled>开始分析 <span>→</span></button>
+        <p id="notice" role="status"></p>
+        <div class="scope"><span class="dot"></span><span id="scope-text">尚未上传数据</span></div>
+        <div class="loop-note"><h3>每次分析，都留下经验</h3><p>智能体会读取同类表格的历史经验，分析后更新本地 Markdown 记忆。</p><code>models → tools → context ↺</code><div><span>memory</span><span>hooks</span></div></div>
+      </aside>
+      <section class="panel analysis">
+        <div class="analysis-head"><div class="section-label"><span>02</span><h2>分析工作台</h2></div><span id="run-state" class="state">等待上传</span></div>
+        <div class="tabs" role="tablist" aria-label="分析内容"><button id="process-tab" class="tab active" role="tab" aria-selected="true" aria-controls="process">执行过程 <span id="event-count">0</span></button><button id="result-tab" class="tab" role="tab" aria-selected="false" aria-controls="result">分析结果</button></div>
+        <div id="process" role="tabpanel" aria-labelledby="process-tab"><div id="empty" class="empty"><div class="loop-symbol">↻</div><h3>从一张表开始</h3><p>这里会实时展示分析计划、工具调用和执行结果。</p><div class="steps"><span>识别数据</span><i>→</i><span>选择指标</span><i>→</i><span>执行分析</span><i>→</i><span>沉淀记忆</span></div></div><div id="events" aria-live="polite" aria-relevant="additions"></div></div>
+        <div id="result" role="tabpanel" aria-labelledby="result-tab" hidden><div id="result-empty" class="empty"><h3>结果将在分析完成后生成</h3><p>统计与结论都基于你上传的表格。</p></div><div id="report" hidden><div id="metrics" class="metrics"></div><div id="charts"></div><div class="report-heading"><h3>分析报告</h3><button id="download" class="quiet">下载 .md ↓</button></div><pre id="report-text"></pre></div></div>
+        <div class="analysis-foot"><span class="dot"></span> 过程展示包含简要分析依据和工具事实</div>
+      </section>
+    </div>
+    <footer>个人测试 Demo <span>TypeScript · Native Agent Loop</span></footer>
+  </main>
+  <dialog id="memory-dialog"><div class="dialog-head"><div><div class="eyebrow">LOCAL MEMORY</div><h2>分析经验</h2></div><button id="close-memory" class="quiet" aria-label="关闭记忆">✕</button></div><p class="hint">保存在工程 memory 目录；同字段结构的表格会自动召回。可直接编辑或删除对应 MD 文件。</p><div id="memory-list"></div></dialog>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

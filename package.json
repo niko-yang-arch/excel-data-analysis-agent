@@ -1,0 +1,17 @@
+{
+  "name": "order-agent-demo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && node --env-file-if-exists=.env dist/src/server.js",
+    "test": "npm run build && node --test dist/tests/*.test.js"
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0",
+    "jszip": "^3.10.2"
+  },
+  "devDependencies": { "@types/node": "^22.0.0", "typescript": "^5.9.0" }
+}

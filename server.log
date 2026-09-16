@@ -1,0 +1,23 @@
+nohup: setsid: No such file or directory
+
+> order-agent-demo@1.0.0 start
+> npm run build && node --env-file-if-exists=.env dist/src/server.js
+
+
+> order-agent-demo@1.0.0 build
+> tsc
+
+订单 Agent → http://127.0.0.1:3000
+sh: line 1:  3638 Killed: 9               node --env-file-if-exists=.env dist/src/server.js
+
+===== restart 2026-09-15 17:36:03 =====
+
+> order-agent-demo@1.0.0 start
+> npm run build && node --env-file-if-exists=.env dist/src/server.js
+
+
+> order-agent-demo@1.0.0 build
+> tsc
+
+订单 Agent → http://127.0.0.1:3000
+sh: line 1:  6285 Terminated: 15          node --env-file-if-exists=.env dist/src/server.js
