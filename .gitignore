@@ -4,3 +4,4 @@ dist/
 memory/*.md
 !memory/README.md
 .DS_Store
+tests/
