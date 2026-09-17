@@ -17,6 +17,20 @@ const day = (v: unknown): string | null => {
   return date.getUTCFullYear() === y && date.getUTCMonth() === m - 1 && date.getUTCDate() === d ? date.toISOString().slice(0, 10) : null;
 };
 
+// 皮尔逊相关系数：样本不足或任一列没有变化时返回 null，避免出现 0/0 的假相关。
+const correlation = (pairs: { x: number; y: number }[]): number | null => {
+  if (pairs.length < 3) return null;
+  const meanX = pairs.reduce((sum, pair) => sum + pair.x, 0) / pairs.length;
+  const meanY = pairs.reduce((sum, pair) => sum + pair.y, 0) / pairs.length;
+  let covariance = 0; let varianceX = 0; let varianceY = 0;
+  for (const pair of pairs) {
+    const dx = pair.x - meanX; const dy = pair.y - meanY;
+    covariance += dx * dy; varianceX += dx * dx; varianceY += dy * dy;
+  }
+  if (varianceX === 0 || varianceY === 0) return null;
+  return round(covariance / Math.sqrt(varianceX * varianceY));
+};
+
 export function makeTools(table: Table, remember: (content: string) => Promise<string>): Tools {
   const { rows, columns } = table;
   const col = (value: unknown, required = false): string | undefined => {
@@ -75,6 +89,17 @@ export function makeTools(table: Table, remember: (content: string) => Promise<s
       const result = group(r => { const parsed = day(r[date]); return parsed ? parsed.slice(0, period === 'month' ? 7 : 10) : null; }, amount);
       result.groups.sort((a, b) => a.label.localeCompare(b.label));
       return { dateColumn: date, valueColumn: amount, period, invalidDates: result.excluded, periodCount: result.groups.length, groups: result.groups.slice(-60), basis: '仅列出有记录的最近 60 期，缺失日期不自动补零。records 为明细行数。' };
+    }),
+    correlate: define('比较两列数值的成对关系，用于观察它们是否同向变化，结果会生成散点图。只使用两列都有有效数值的行。', { x: 'X 轴数值列名', y: 'Y 轴数值列名' }, ['x', 'y'], async args => {
+      const x = col(args.x, true)!; const y = col(args.y, true)!;
+      const pairs: { x: number; y: number; label: string }[] = []; let skipped = 0;
+      rows.forEach((row, index) => {
+        const first = numeric(row[x]); const second = numeric(row[y]);
+        if (first === null || second === null) { skipped++; return; }
+        pairs.push({ x: first, y: second, label: `第 ${index + 2} 行` });
+      });
+      return { xColumn: x, yColumn: y, count: pairs.length, skipped, r: correlation(pairs), pairs: pairs.slice(0, 200),
+        basis: '只使用两列都有有效数值的行；最多展示前 200 对。相关系数只描述同向或反向程度，样本少或重复值多时不可靠，不代表因果。' };
     }),
     repeat_customers: define('仅在明确是客户订单数据时使用：按客户独立订单数计算复购。至少两单视为复购；不输出客户身份。', { customer: '客户标识列名', orderId: '订单编号列名' }, ['customer', 'orderId'], async args => {
       const customer = col(args.customer, true)!; const orderId = col(args.orderId, true)!;

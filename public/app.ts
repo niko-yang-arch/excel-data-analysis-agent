@@ -1,4 +1,5 @@
-import { renderCharts } from './charts.js';
+import { downloadSvg } from './charts.js';
+import { articleHtml } from './report.js';
 import type { Chart } from '../src/charts.js';
 import type { Event } from '../src/types.js';
 const el = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -32,7 +33,7 @@ function chooseFile(next?: File) {
   el('file-hint').textContent = file ? `${(file.size / 1024).toFixed(1)} KB · 点击更换文件` : 'CSV / XLSX · 最大 5 MB';
   el('notice').textContent = valid ? '' : '请选择不超过 5 MB 的 CSV 或 XLSX 文件。';
   // 更换文件即清空旧结果，避免误把上一次统计当成当前数据。
-  el('events').replaceChildren(); el('metrics').replaceChildren(); el('charts').replaceChildren(); count = 0; report = '';
+  el('events').replaceChildren(); el('metrics').replaceChildren(); count = 0; report = '';
   el('empty').hidden = false; el('report').hidden = true; el('result-empty').hidden = false;
   el('event-count').textContent = '0'; el('scope-text').textContent = valid ? '新文件已选择，等待分析' : '尚未上传数据';
   el('run-state').textContent = valid ? '准备就绪' : '等待上传'; selectTab('process');
@@ -62,8 +63,14 @@ function addEvent(event: Event) {
 }
 function handleEvent(event: Event) {
   if (event.type === 'done') {
-    renderCharts(el('charts'), (event.data as { charts?: Chart[] } | undefined)?.charts ?? []);
-    report = event.text; el('report-text').textContent = report;
+    // 报告是一篇文章：图表按模型在正文里写的 [[fig-N]] 插入到对应段落之后。
+    const charts = (event.data as { charts?: Chart[] } | undefined)?.charts ?? [];
+    report = event.text;
+    el('report-text').innerHTML = articleHtml(report, charts);
+    for (const button of el('report-text').querySelectorAll<HTMLButtonElement>('button[data-svg]')) {
+      const chart = charts.find(item => item.id === button.dataset.svg);
+      if (chart) button.onclick = () => downloadSvg(chart);
+    }
     el('result-empty').hidden = true; el('report').hidden = false;
     el('run-state').textContent = '分析完成'; selectTab('result'); return;
   }
@@ -73,7 +80,7 @@ function handleEvent(event: Event) {
   if (event.type === 'tool_end') {
     const data = event.data as { name: string; result: Record<string, unknown> };
     if (data.name === 'overview' && !data.result.error) {
-      el('metrics').replaceChildren(); el('charts').replaceChildren();
+      el('metrics').replaceChildren();
       for (const [key, label] of [['records', '记录数'], ['fieldCount', '字段数'], ['duplicateRows', '重复行数']] as const) {
         if (typeof data.result[key] !== 'number') continue;
         const card = document.createElement('div'); card.className = 'metric';
@@ -89,7 +96,7 @@ runButton.onclick = async () => {
   if (controller) { controller.abort(); return; }
   if (!file) return;
   controller = new AbortController(); report = ''; count = 0;
-  el('events').replaceChildren(); el('metrics').replaceChildren(); el('charts').replaceChildren(); el('event-count').textContent = '0';
+  el('events').replaceChildren(); el('metrics').replaceChildren(); el('event-count').textContent = '0';
   el('empty').hidden = true; el('report').hidden = true; el('result-empty').hidden = false;
   el('notice').textContent = ''; el('run-state').textContent = '正在分析…';
   selectTab('process'); runButton.textContent = '停止分析'; fileInput.disabled = true;

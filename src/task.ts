@@ -27,8 +27,14 @@ export async function analyze(table: Table, query: string, model: Model, emit: E
   });
   hooks.on('PostToolUse', ({ call, output }) => {
     const ok = !(output && typeof output === 'object' && 'error' in output);
-    const chart = ok ? chartFor(call!.function.name, output) : undefined;
-    if (chart) charts.set(chart.title, chart);
+    // 编号在这里分配，并写回工具结果，模型才能在报告正文中按 [[fig-N]] 引用它。
+    const chart = ok ? chartFor(call!.function.name, output, `fig-${charts.size + 1}`) : undefined;
+    if (chart) {
+      charts.set(chart.id, chart);
+      if (output && typeof output === 'object') {
+        (output as Record<string, unknown>).figure = { id: chart.id, type: chart.type, title: chart.title };
+      }
+    }
     if (ok && call!.function.name === 'overview') inspected = true;
     if (ok && call!.function.name === 'remember') remembered = true;
     emit({ type: 'tool_end', text: `${call!.function.name} ${ok ? '完成' : '未完成，交由模型纠正'}`,

@@ -26,11 +26,11 @@
         <div class="analysis-head"><div class="section-label"><span>02</span><h2>分析工作台</h2></div><span id="run-state" class="state">等待上传</span></div>
         <div class="tabs" role="tablist" aria-label="分析内容"><button id="process-tab" class="tab active" role="tab" aria-selected="true" aria-controls="process">执行过程 <span id="event-count">0</span></button><button id="result-tab" class="tab" role="tab" aria-selected="false" aria-controls="result">分析结果</button></div>
         <div id="process" role="tabpanel" aria-labelledby="process-tab"><div id="empty" class="empty"><div class="loop-symbol">↻</div><h3>从一张表开始</h3><p>这里会实时展示分析计划、工具调用和执行结果。</p><div class="steps"><span>识别数据</span><i>→</i><span>选择指标</span><i>→</i><span>执行分析</span><i>→</i><span>沉淀记忆</span></div></div><div id="events" aria-live="polite" aria-relevant="additions"></div></div>
-        <div id="result" role="tabpanel" aria-labelledby="result-tab" hidden><div id="result-empty" class="empty"><h3>结果将在分析完成后生成</h3><p>统计与结论都基于你上传的表格。</p></div><div id="report" hidden><div id="metrics" class="metrics"></div><div id="charts"></div><div class="report-heading"><h3>分析报告</h3><button id="download" class="quiet">下载 .md ↓</button></div><pre id="report-text"></pre></div></div>
+        <div id="result" role="tabpanel" aria-labelledby="result-tab" hidden><div id="result-empty" class="empty"><h3>结果将在分析完成后生成</h3><p>统计与结论都基于你上传的表格。</p></div><div id="report" hidden><div id="metrics" class="metrics"></div><div class="report-heading"><h3>分析报告</h3><button id="download" class="quiet">下载 .md ↓</button></div><article id="report-text"></article></div></div>
         <div class="analysis-foot"><span class="dot"></span> 过程展示包含简要分析依据和工具事实</div>
       </section>
     </div>
-    <footer>个人测试 Demo <span>TypeScript · Native Agent Loop</span></footer>
+    <footer>TypeScript · Native Agent Loop</span></footer>
   </main>
   <dialog id="memory-dialog"><div class="dialog-head"><div><div class="eyebrow">LOCAL MEMORY</div><h2>分析经验</h2></div><button id="close-memory" class="quiet" aria-label="关闭记忆">✕</button></div><p class="hint">保存在工程 memory 目录；同字段结构的表格会自动召回。可直接编辑或删除对应 MD 文件。</p><div id="memory-list"></div></dialog>
   <script type="module" src="/app.js"></script>

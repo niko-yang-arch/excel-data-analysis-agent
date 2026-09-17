@@ -21,3 +21,15 @@ sh: line 1:  3638 Killed: 9               node --env-file-if-exists=.env dist/sr
 
 订单 Agent → http://127.0.0.1:3000
 sh: line 1:  6285 Terminated: 15          node --env-file-if-exists=.env dist/src/server.js
+
+===== restart 2026-09-16 17:42:13 =====
+
+> order-agent-demo@1.0.0 start
+> npm run build && node --env-file-if-exists=.env dist/src/server.js
+
+
+> order-agent-demo@1.0.0 build
+> tsc
+
+表格 Agent → http://127.0.0.1:3000
+/Users/admin/Library/Accio/external-tools/v7dccae0500c8/node/bin/npm: line 3: 12333 Terminated: 15          "$basedir/node" "$basedir/../lib/node_modules/npm/bin/npm-cli.js" "$@"

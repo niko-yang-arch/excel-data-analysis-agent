@@ -12,6 +12,7 @@ const assets: Record<string, [string, string]> = {
   '/': ['public/index.html', 'text/html; charset=utf-8'],
   '/style.css': ['public/style.css', 'text/css; charset=utf-8'],
   '/charts.js': ['dist/public/charts.js', 'text/javascript; charset=utf-8'],
+  '/report.js': ['dist/public/report.js', 'text/javascript; charset=utf-8'],
   '/app.js': ['dist/public/app.js', 'text/javascript; charset=utf-8'],
 };
 

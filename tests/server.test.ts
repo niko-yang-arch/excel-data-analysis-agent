@@ -30,7 +30,10 @@ test('原生 HTTP 上传两份订单，统计不同，第二次召回 MD；错�
       return (await response.text()).trim().split('\n').map(line => JSON.parse(line));
     };
     const first = await submit(50); const second = await submit(200);
-    assert.equal(first.at(-1).type, 'done'); assert.equal(first.at(-1).data.charts[0].title, '各字段缺失情况'); assert.equal(first.at(-1).text, '合计：50');
+    assert.equal(first.at(-1).type, 'done'); assert.equal(first.at(-1).text, '合计：50');
+    // 概览结果生成字段清单表格，并按顺序拿到可被正文引用的编号
+    assert.deepEqual(first.at(-1).data.charts.map((chart: any) => [chart.id, chart.type, chart.title]),
+      [['fig-1', 'table', '字段完整性与去重']]);
     assert.equal(second.at(-1).text, '合计：200');
     assert.ok(second.some(e => e.type === 'memory' && e.text.includes('已召回')));
     assert.equal((await readdir(dir)).filter(f => f.endsWith('.md')).length, 1);
